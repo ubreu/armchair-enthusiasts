@@ -1,0 +1,7 @@
+[package]
+name = "armchair_enthusiasts"
+version = "0.1.0"
+authors = ["Urs Breu <dev@gleisdrei.ch>"]
+edition = "2018"
+
+[dependencies]
