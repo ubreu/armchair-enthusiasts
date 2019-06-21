@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:11.3-alpine
+    ports:
+      - 25432:5432
+    environment:
+      POSTGRES_PASSWORD: password
+    volumes:
+      - data:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 28080:8080
+volumes:
+  data: {}
