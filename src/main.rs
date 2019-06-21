@@ -1,4 +1,3 @@
-// main.rs
 #[macro_use]
 extern crate diesel;
 #[macro_use]
@@ -18,12 +17,19 @@ use crate::models::DbExecutor;
 
 fn main() -> std::io::Result<()> {
     dotenv().ok();
-    std::env::set_var(
-        "RUST_LOG",
-        "armchar_enthusiasts=debug,actix_web=info,actix_server=info",
-    );
+    let key = "RUST_LOG";
+    match std::env::var(key) {
+        Ok(val) => println!("using {}={:?}", key, val),
+        Err(_) => {
+            std::env::set_var(
+                key,
+                "armchair_enthusiasts=debug,actix_web=info,actix_server=info",
+            );
+            println!("setting default RUST_LOG values");
+        }
+    }
     env_logger::init();
-    let sys = actix_rt::System::new("example");
+    let sys = actix_rt::System::new("main");
 
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
@@ -35,13 +41,11 @@ fn main() -> std::io::Result<()> {
     let address: Addr<DbExecutor> = SyncArbiter::start(4, move || DbExecutor(pool.clone()));
 
     let endpoint = "0.0.0.0:28000";
-    info!("Starting alfred person service at: {:?}", endpoint);
+    info!("Starting server at: {:?}", endpoint);
 
     HttpServer::new(move || {
         App::new()
-            // add database pool as data/state to the app
             .data(address.clone())
-            // setup logger for requests
             .wrap(Logger::default())
             .service(web::scope("/").service(web::resource("/auth").route(web::get().to(|| {}))))
     })
