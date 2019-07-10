@@ -1,9 +1,3 @@
-use actix::{Actor, SyncContext};
-use diesel::pg::PgConnection;
-use diesel::r2d2::{ConnectionManager, Pool};
+use diesel::{r2d2::ConnectionManager, PgConnection};
 
-pub struct DbExecutor(pub Pool<ConnectionManager<PgConnection>>);
-
-impl Actor for DbExecutor {
-    type Context = SyncContext<Self>;
-}
+pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
